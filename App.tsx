@@ -1,131 +1,165 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { useState } from "react";
+import { Button, ScrollView, StatusBar, Text, useColorScheme, View } from "react-native"
+import { Colors } from "react-native/Libraries/NewAppScreen";
+import BouncyCheckbox from "react-native-bouncy-checkbox"
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
+interface TaskProps {
   title: string;
-}>;
+  description: string;
+};
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const Task: React.FC<TaskProps> = ({ title, description }: TaskProps) => {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View
+      style={{
+        backgroundColor: "white",
+        width: "100%",
+        maxWidth: "100%",
+        paddingVertical: 17,
+        paddingHorizontal: 21,
+        borderRadius: 10,
+        display: "flex",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        flexDirection: "row",
+      }}
+    >
+      <View>
+        <BouncyCheckbox
+          size={25}
+          fillColor="green"
+          unFillColor="transparent"
+          iconStyle={{ borderRadius: 7 }}
+          innerIconStyle={{ borderWidth: 2, borderColor: "green", borderRadius: 7 }}
+        />
+      </View>
+      <View>
+        <Text
+          style={{
+            fontFamily: "Ubuntu-Medium",
+            fontSize: 17,
+            color: "#1E293B",
+          }}
+        >{title}</Text>
+        <Text
+          style={{
+            color: "#64748B",
+            fontSize: 15,
+            fontFamily: "Ubuntu-Regular",
+          }}
+        >
+          {description.length < 35 ? description : description.slice(0, 35) + "..."}
+        </Text>
+      </View>
     </View>
-  );
+  )
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const App: React.FC = () => {
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(useColorScheme() === "dark");
+  const [dateTime, setDateTime] = useState(new Date());
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const themeStyle = {
+    backgroundColor: isDarkMode ? "#2D62F1" : Colors.lighter,
+    fontColor: isDarkMode ? "white" : "black",
   };
 
-  /*
-   * To keep the template simple and small we're adding padding to prevent view
-   * from rendering under the System UI.
-   * For bigger apps the recommendation is to use `react-native-safe-area-context`:
-   * https://github.com/AppAndFlow/react-native-safe-area-context
-   *
-   * You can read more about it here:
-   * https://github.com/react-native-community/discussions-and-proposals/discussions/827
-   */
-  const safePadding = '5%';
+  const handleToggleThemeMode = () => {
+    setIsDarkMode(currentBooleanVal => !currentBooleanVal);
+  }
 
   return (
-    <View style={backgroundStyle}>
+    <View>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+        backgroundColor={themeStyle.backgroundColor}
       />
-      <ScrollView
-        style={backgroundStyle}>
-        <View style={{paddingRight: safePadding}}>
-          <Header/>
-        </View>
+      <View
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 7,
+          backgroundColor: "#5A84F9",
+          paddingBottom: 17,
+        }}
+      >
         <View
           style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            paddingHorizontal: safePadding,
-            paddingBottom: safePadding,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </View>
-  );
-}
+            width: "100%",
+            backgroundColor: themeStyle.backgroundColor,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexDirection: "row",
+            paddingVertical: 12,
+            paddingHorizontal: 17,
+          }}
+        >
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "flex-start",
+            }}
+          >
+            <Text style={{
+              color: themeStyle.fontColor,
+              fontSize: 25,
+              fontFamily: "Ubuntu-Medium",
+            }}>Today</Text>
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+            <Text
+              style={{
+                color: themeStyle.fontColor,
+                fontSize: 17,
+                fontFamily: "Ubuntu-Regular",
+              }}>
+              {dateTime.toDateString()}
+            </Text>
+          </View>
+
+          <Button title={isDarkMode ? "Light" : "Dark"} onPress={handleToggleThemeMode} />
+        </View>
+
+        {/* Task Cards Container */}
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            minWidth: "100%",
+            paddingHorizontal: 17,
+            paddingVertical: 17,
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
+          {/* Task Cards will appear here */}
+          <Task title="First Task" description="This is description" />
+          <Task title="Second Task" description="This is the second task's description. This contains more characters." />
+          <Task title="Third Task" description="This is the third task's description." />
+          <Task title="This is a Task" description="This is another description." />
+          <Task title="This is a Task" description="This is another description." />
+          <Task title="This is a Task" description="This is another description." />
+          <Task title="This is a Task" description="এটি হলো সপ্তম টাস্ক এর বিস্তারিত বিবরণ।" />
+          <Task title="This is a Task" description="This is another description." />
+          <Task title="This is a Task" description="This is another description." />
+        </ScrollView>
+
+        <View
+          style={{
+            width: "100%",
+            paddingHorizontal: "25%",
+          }}
+        >
+          <Button title={"+Add Task"} color={themeStyle.backgroundColor} />
+        </View>
+      </View>
+    </View>
+  )
+}
 
 export default App;
