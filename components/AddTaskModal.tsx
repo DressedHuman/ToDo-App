@@ -8,7 +8,7 @@ import { saveTaskData } from "./StorageFunctions";
 interface Props {
     isModalVisible: boolean,
     setIsModalVisible: Dispatch<SetStateAction<boolean>>;
-    setTaskData: Dispatch<SetStateAction<LinkedList<ITaskDetailsInfoData>>>;
+    setTaskData: Dispatch<SetStateAction<ITaskDetailsInfoData[]>>;
 };
 
 const AddTaskModal: React.FC<Props> = ({ isModalVisible, setIsModalVisible, setTaskData }) => {
@@ -18,6 +18,7 @@ const AddTaskModal: React.FC<Props> = ({ isModalVisible, setIsModalVisible, setT
     const handleSaveTask = async () => {
         // initializing new task info
         const new_task_info: ITaskDetailsInfoData = {
+            time_stamp: new Date().toString(),
             title: title,
             details: details,
         };

@@ -85,6 +85,9 @@ class LinkedList<T> {
         const prev = this.getNode(index - 1) as Node<T>;
         const removedNode = prev.next as Node<T>;
         prev.next = removedNode.next;
+
+        // decrementing the length property
+        --this.length;
         return true;
     }
 
@@ -94,6 +97,31 @@ class LinkedList<T> {
 
     __is_index_out_of_range(index: number): void {
         if (index < 0 || index >= this.length) throw Error(`Index ${index} out of range`);
+    }
+
+
+    // make a clone of the linked list
+    clone(): LinkedList<T> {
+        const clonedOne: LinkedList<T> = new LinkedList();
+        let current: Node<T> | null = this.head;
+        while(current) {
+            clonedOne.push(current.value);
+            current = current.next;
+        }
+
+        return clonedOne;
+    }
+
+    // make an array of it
+    toArray(): T[] {
+        const result: T[] = [];
+        let current = this.head;
+        while(current) {
+            result.push(current.value);
+            current = current.next;
+        }
+
+        return result;
     }
 }
 
