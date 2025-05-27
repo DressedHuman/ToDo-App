@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, StatusBar, useColorScheme, View } from "react-native";
 import TaskDetailsModal, { TaskDetailsInfoType } from "./components/TaskDetailsModal";
 import AddTaskModal from "./components/AddTaskModal";
-import { getSavedTasksData, removeTaskData } from "./components/StorageFunctions";
+import { getSavedTasksData, removeTaskData, updateSavedTask } from "./components/StorageFunctions";
 import Header from "./components/Header";
 import TaskContainer from "./components/TaskContainer";
 
@@ -33,6 +33,33 @@ const App: React.FC = () => {
   const [taskData, setTaskData] = useState<ITaskDetailsInfoData[]>([]);
 
 
+  // handler for updating task status
+  const handleUpdateStatus = (time_stamp: string, status: boolean) => {
+    // store current task info for using to update saved tasks below
+    const targetTask = taskData.find(item => item.time_stamp === time_stamp)!;
+
+    // update at the app ui
+    setTaskData(prevTaskData => {
+      const newTaskData = [...prevTaskData];
+      return newTaskData.map(item => {
+        if (item.time_stamp === time_stamp) {
+          item.done = status;
+          if (status) {
+            item.completedAt = new Date().toString();
+          } else {
+            item.completedAt = "";
+          }
+        }
+        return item;
+      })
+    })
+
+    // update at AsyncStorage
+    targetTask.done = status;
+    updateSavedTask(time_stamp, targetTask);
+  }
+
+  // handler for deleting task
   const handleDeleteTask = (taskIndex: number) => {
     const removedTask = taskData[taskIndex];
 
@@ -51,9 +78,29 @@ const App: React.FC = () => {
   useEffect(() => {
     getSavedTasksData()
       .then(saved_tasks_data => {
+        saved_tasks_data.sort((a, b) => {
+          if (a.done === b.done) {
+            if (!a.done) return 0;
+            return new Date(a.completedAt!).valueOf() - new Date(b.completedAt!).valueOf();
+          }
+          return a.done ? 1 : -1;
+        })
         setTaskData(saved_tasks_data);
       })
   }, []);
+
+
+  // sort taskData whenever tasks get updated
+  // sorting the tasks first
+  const sortedTasks = useMemo(() => {
+    return taskData.slice().sort((a, b) => {
+      if (a.done === b.done) {
+        if (!a.done) return 0;
+        return new Date(a.completedAt!).valueOf() - new Date(b.completedAt!).valueOf();
+      }
+      return a.done ? 1 : -1;
+    })
+  }, [taskData]);
 
   return (
     <View>
@@ -79,7 +126,8 @@ const App: React.FC = () => {
 
         {/* Task Cards Container */}
         <TaskContainer
-          taskData={taskData}
+          taskData={sortedTasks}
+          handleStatusUpdate={handleUpdateStatus}
           handleDeleteTask={handleDeleteTask}
           setIsTaskDetailsModalVisible={setIsTaskDetailsModalVisible}
           setTaskDetailsModalInfo={setTaskDetailsModalInfo}

@@ -6,11 +6,13 @@ import { TaskDetailsInfoType } from "./TaskDetailsModal";
 interface TaskProps {
     title: string;
     details: string;
+    isChecked: boolean;
     setModalVisible: Dispatch<SetStateAction<boolean>>;
     setDetailsModalInfo: Dispatch<SetStateAction<TaskDetailsInfoType>>;
+    handleStatusUpdate: () => void;
 };
 
-const TaskCard: React.FC<TaskProps> = ({ title, details, setModalVisible, setDetailsModalInfo }: TaskProps) => {
+const TaskCard: React.FC<TaskProps> = ({ title, details, isChecked, setModalVisible, setDetailsModalInfo, handleStatusUpdate }: TaskProps) => {
     const handlePress = () => {
         const info: TaskDetailsInfoType = {
             title,
@@ -43,6 +45,8 @@ const TaskCard: React.FC<TaskProps> = ({ title, details, setModalVisible, setDet
                     unFillColor="transparent"
                     iconStyle={{ borderRadius: 7 }}
                     innerIconStyle={{ borderWidth: 2, borderColor: "#2D62F1", borderRadius: 7 }}
+                    onPress={handleStatusUpdate}
+                    isChecked={isChecked}
                 />
             </View>
             <View>

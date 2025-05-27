@@ -44,13 +44,18 @@ const getSavedTasksData = async (): Promise<ITaskDetailsInfoData[]> => {
 
 
 // update a task at given index with an updated task value
-const updateSavedTask = async (index: number, updated_value: ITaskDetailsInfoData) => {
+const updateSavedTask = async (time_stamp: string, updated_value: ITaskDetailsInfoData) => {
     try {
-        const saved_tasks_count = await getSavedTasksCount();
-        if (index < 0 || index >= saved_tasks_count) throw Error(`Index ${index} out of range`);
-
         const saved_tasks = await getSavedTasksData();
-        saved_tasks[index] = updated_value;
+
+        // find the index of the saved task with the time_stamp
+        const targetTaskIndex = saved_tasks.findIndex(item => item.time_stamp === time_stamp);
+        if(targetTaskIndex<0) throw Error(`Task not found in the storage with time stamp: ${time_stamp}`);
+        
+        // update the task info
+        saved_tasks[targetTaskIndex] = updated_value;
+
+        // save to the storage
         await storeRawDataToAsyncStorage("saved_tasks", saved_tasks);
     } catch (e) {
         throw e;
